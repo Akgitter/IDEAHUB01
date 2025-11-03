@@ -23,7 +23,7 @@ export const formatTimeAgo = (date: Date): string => {
 };
 
 export const generateId = (): string => {
-  return Math.random().toString(36).substr(2, 9);
+  return Math.random().toString(36).substring(2, 11);
 };
 
 export const copyToClipboard = async (text: string): Promise<boolean> => {

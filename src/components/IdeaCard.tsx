@@ -41,9 +41,11 @@ const IdeaCard = ({ idea }: IdeaCardProps) => {
   };
 
   const handleShare = async () => {
-    const shareUrl = `${window.location.origin}/idea/${idea.id}`;
+    // Note: In production, this would link to a dedicated idea detail page
+    const shareUrl = `${window.location.origin}/feed`;
     const success = await copyToClipboard(shareUrl);
     if (success) {
+      // TODO: Replace alert with toast notification in production
       alert('Link copied to clipboard!');
     } else {
       alert('Failed to copy link');

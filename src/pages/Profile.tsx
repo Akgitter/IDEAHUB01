@@ -6,7 +6,7 @@ import '../styles/Profile.css';
 
 const Profile = () => {
   const { user } = useAuth();
-  const { ideas, users, followUser, unfollowUser } = useApp();
+  const { ideas, users, followUser, unfollowUser, updateUserProfile } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [bio, setBio] = useState(user?.bio || '');
@@ -34,7 +34,12 @@ const Profile = () => {
 
   const handleSaveBio = () => {
     setIsEditing(false);
-    // Update bio logic would go here
+    if (user) {
+      updateUserProfile(user.id, { bio });
+      // Update the user in auth context as well
+      const updatedUser = { ...user, bio };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
   };
 
   return (
