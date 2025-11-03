@@ -22,8 +22,11 @@ export const formatTimeAgo = (date: Date): string => {
   }
 };
 
+// NOTE: This uses Math.random() for simplicity in the frontend-only prototype.
+// For production use with backend, replace with UUID/nanoid library or server-generated IDs
 export const generateId = (): string => {
-  return Math.random().toString(36).substring(2, 11);
+  // Generate a random ID for demo purposes
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 };
 
 export const copyToClipboard = async (text: string): Promise<boolean> => {
