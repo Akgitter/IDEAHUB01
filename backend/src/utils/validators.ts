@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { config } from '../config/index.js';
 
 export const validateEmail = (email: string): boolean => {
+  // Simple email validation regex without potential ReDoS issues
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return false;
@@ -34,4 +35,9 @@ export const validatePassword = (password: string): { valid: boolean; message?: 
 export const generateVerificationToken = (): string => {
   // Use cryptographically secure random bytes
   return crypto.randomBytes(32).toString('hex');
+};
+
+export const validateToken = (token: string): boolean => {
+  // Verify token is a valid hex string of expected length (64 characters for 32 bytes)
+  return /^[a-f0-9]{64}$/.test(token);
 };

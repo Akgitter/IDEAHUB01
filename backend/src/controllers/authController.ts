@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User.js';
 import { generateToken } from '../utils/jwt.js';
-import { validateEmail, validatePassword, generateVerificationToken } from '../utils/validators.js';
+import { validateEmail, validatePassword, generateVerificationToken, validateToken } from '../utils/validators.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/email.js';
 import { config } from '../config/index.js';
 import { AuthRequest } from '../middleware/auth.js';
@@ -141,6 +141,12 @@ export const verifyEmail = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    // Validate token format to prevent injection
+    if (!validateToken(token)) {
+      res.status(400).json({ error: 'Invalid token format' });
+      return;
+    }
+
     // Find user with matching token and check expiration
     const user = await User.findOne({
       emailVerificationToken: token,
@@ -257,6 +263,12 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
 
     if (!token || !password) {
       res.status(400).json({ error: 'Token and new password are required' });
+      return;
+    }
+
+    // Validate token format to prevent injection
+    if (!validateToken(token)) {
+      res.status(400).json({ error: 'Invalid token format' });
       return;
     }
 
