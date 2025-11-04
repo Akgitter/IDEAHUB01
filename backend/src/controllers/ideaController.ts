@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import mongoose from 'mongoose';
 import { Idea } from '../models/Idea.js';
 import { Comment } from '../models/Comment.js';
 import { AuthRequest } from '../middleware/auth.js';
@@ -186,7 +187,7 @@ export const upvoteIdea = async (req: AuthRequest, res: Response): Promise<void>
       idea.upvotes = idea.upvotes.filter(id => id.toString() !== userIdObj);
     } else {
       // Add upvote and remove downvote if exists
-      idea.upvotes.push(req.userId as any);
+      idea.upvotes.push(new mongoose.Types.ObjectId(req.userId));
       if (hasDownvoted) {
         idea.downvotes = idea.downvotes.filter(id => id.toString() !== userIdObj);
       }
@@ -231,7 +232,7 @@ export const downvoteIdea = async (req: AuthRequest, res: Response): Promise<voi
       idea.downvotes = idea.downvotes.filter(id => id.toString() !== userIdObj);
     } else {
       // Add downvote and remove upvote if exists
-      idea.downvotes.push(req.userId as any);
+      idea.downvotes.push(new mongoose.Types.ObjectId(req.userId));
       if (hasUpvoted) {
         idea.upvotes = idea.upvotes.filter(id => id.toString() !== userIdObj);
       }

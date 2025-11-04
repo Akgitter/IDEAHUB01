@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { config } from '../config/index.js';
 
 export const validateEmail = (email: string): boolean => {
@@ -31,6 +32,6 @@ export const validatePassword = (password: string): { valid: boolean; message?: 
 };
 
 export const generateVerificationToken = (): string => {
-  return Math.random().toString(36).substring(2, 15) + 
-         Math.random().toString(36).substring(2, 15);
+  // Use cryptographically secure random bytes
+  return crypto.randomBytes(32).toString('hex');
 };

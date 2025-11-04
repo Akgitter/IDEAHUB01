@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import mongoose from 'mongoose';
 import { User } from '../models/User.js';
 import { AuthRequest } from '../middleware/auth.js';
 
@@ -135,8 +136,8 @@ export const followUser = async (req: AuthRequest, res: Response): Promise<void>
     }
 
     // Add to following and followers
-    currentUser.following.push(id as any);
-    targetUser.followers.push(req.userId as any);
+    currentUser.following.push(new mongoose.Types.ObjectId(id));
+    targetUser.followers.push(new mongoose.Types.ObjectId(req.userId));
 
     await Promise.all([currentUser.save(), targetUser.save()]);
 
