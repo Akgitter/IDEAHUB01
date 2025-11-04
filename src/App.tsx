@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppProvider } from './contexts/AppContext';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Feed from './pages/Feed';
 import PostIdea from './pages/PostIdea';
 import Profile from './pages/Profile';
@@ -15,6 +16,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path={ROUTES.HOME} element={isAuthenticated ? <Navigate to={ROUTES.FEED} /> : <Login />} />
+      <Route path={ROUTES.SIGNUP} element={isAuthenticated ? <Navigate to={ROUTES.FEED} /> : <Signup />} />
       <Route
         path={ROUTES.FEED}
         element={

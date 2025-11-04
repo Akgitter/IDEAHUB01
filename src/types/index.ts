@@ -6,6 +6,7 @@ export interface User {
   avatar?: string;
   followers: string[];
   following: string[];
+  isEmailVerified?: boolean;
 }
 
 export interface Idea {

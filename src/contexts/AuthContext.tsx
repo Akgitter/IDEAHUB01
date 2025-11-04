@@ -1,14 +1,15 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User } from '../types';
-import { validateEmail } from '../utils/helpers';
-import { getUserFromStorage, saveUserToStorage, removeUserFromStorage } from '../services/storage';
-import { generateId } from '../utils/helpers';
+import { apiService } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string) => boolean;
+  token: string | null;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,41 +28,65 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(() => {
-    const savedUser = getUserFromStorage();
-    return savedUser as User | null;
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const login = (email: string): boolean => {
-    if (!validateEmail(email)) {
-      return false;
-    }
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('token');
+  });
 
-    const newUser: User = {
-      id: generateId(),
-      name: email.split('@')[0],
-      email,
-      bio: '',
-      followers: [],
-      following: [],
+  // Verify token on mount and periodically
+  useEffect(() => {
+    const verifyToken = async () => {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        try {
+          const response = await apiService.getCurrentUser(storedToken) as { user: User };
+          setUser(response.user);
+          setToken(storedToken);
+        } catch {
+          // Token is invalid or expired
+          logout();
+        }
+      }
     };
 
-    setUser(newUser);
-    saveUserToStorage(newUser);
-    return true;
+    verifyToken();
+  }, []);
+
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const response = await apiService.login({ email, password }) as { token: string; user: User };
+      
+      setUser(response.user);
+      setToken(response.token);
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const logout = () => {
     setUser(null);
-    removeUserFromStorage();
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        token,
         login,
         logout,
-        isAuthenticated: !!user,
+        isAuthenticated: !!user && !!token,
+        setUser,
+        setToken,
       }}
     >
       {children}

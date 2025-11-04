@@ -3,6 +3,7 @@ export const ALLOWED_EMAIL_DOMAIN = '@dtu.ac.in';
 
 export const ROUTES = {
   HOME: '/',
+  SIGNUP: '/signup',
   FEED: '/feed',
   POST: '/post',
   PROFILE: '/profile',
